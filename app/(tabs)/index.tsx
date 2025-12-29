@@ -1,98 +1,149 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+  Keyboard,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Platform,
+} from "react-native";
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [problem, setProblem] = useState("");
+  const [pattern, setPattern] = useState("");
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const detectPattern = () => {
+    Keyboard.dismiss(); // hide keyboard on button press
+    const text = problem.toLowerCase();
+
+    if (
+      text.includes("subarray") ||
+      text.includes("window") ||
+      text.includes("contiguous")
+    ) {
+      setPattern("Sliding Window");
+    } else if (
+      text.includes("graph") ||
+      text.includes("edges") ||
+      text.includes("nodes") ||
+      text.includes("shortest path")
+    ) {
+      setPattern("Graph / BFS / DFS");
+    } else if (
+      text.includes("maximize") ||
+      text.includes("minimize") ||
+      text.includes("dp") ||
+      text.includes("dynamic")
+    ) {
+      setPattern("Dynamic Programming");
+    } else if (
+      text.includes("sorted") ||
+      text.includes("two pointers") ||
+      text.includes("left") ||
+      text.includes("right")
+    ) {
+      setPattern("Two Pointers");
+    } else {
+      setPattern("Pattern unclear 🤔 Try adding more details.");
+    }
+  };
+
+  return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <Text style={styles.title}>PatternSense 🧠</Text>
+          <Text style={styles.subtitle}>DSA Problem Pattern Detector</Text>
+
+          <TextInput
+            placeholder="Paste your DSA problem statement here..."
+            placeholderTextColor="#94a3b8"
+            multiline
+            value={problem}
+            onChangeText={setProblem}
+            style={styles.input}
+          />
+
+          <Pressable style={styles.button} onPress={detectPattern}>
+            <Text style={styles.buttonText}>Detect Pattern</Text>
+          </Pressable>
+
+          {pattern !== "" && (
+            <View style={styles.resultBox}>
+              <Text style={styles.resultTitle}>Detected Pattern</Text>
+              <Text style={styles.resultText}>{pattern}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
+    backgroundColor: "#0f172a",
+    padding: 20,
+    justifyContent: "center",
   },
-  stepContainer: {
-    gap: 8,
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#38bdf8",
+    textAlign: "center",
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  subtitle: {
+    fontSize: 16,
+    color: "#e5e7eb",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  input: {
+    backgroundColor: "#020617",
+    color: "#e5e7eb",
+    minHeight: 120,
+    borderRadius: 10,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#334155",
+    marginBottom: 16,
+    textAlignVertical: "top",
+  },
+  button: {
+    backgroundColor: "#38bdf8",
+    paddingVertical: 14,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: "#020617",
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 16,
+  },
+  resultBox: {
+    marginTop: 20,
+    padding: 16,
+    borderRadius: 10,
+    backgroundColor: "#020617",
+    borderWidth: 1,
+    borderColor: "#334155",
+  },
+  resultTitle: {
+    color: "#94a3b8",
+    fontSize: 14,
+    marginBottom: 6,
+  },
+  resultText: {
+    color: "#38bdf8",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
