@@ -34,14 +34,17 @@ export default function HomeScreen() {
       setLoadingAI(true);
       setAiData(null);
 
-      const response = await fetch("http://172.20.10.3:5000/api/ai/examples", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          problem,
-          patterns: detected.map((d) => d.pattern),
-        }),
-      });
+      const response = await fetch(
+        "https://patternsense.onrender.com/api/ai/examples",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            problem,
+            patterns: detected.map((d) => d.pattern),
+          }),
+        }
+      );
 
       const data = await response.json();
 
